@@ -1,0 +1,127 @@
+definitions:
+  service.HMACRequest:
+    properties:
+      key:
+        type: string
+      text:
+        type: string
+    type: object
+  service.HMACResponse:
+    properties:
+      signature:
+        type: string
+    type: object
+  service.RequestPayload:
+    properties:
+      key:
+        type: string
+      value:
+        type: integer
+    type: object
+  service.ResponsePayload:
+    properties:
+      key:
+        type: string
+      value:
+        type: integer
+    type: object
+  service.UserRequest:
+    properties:
+      age:
+        type: integer
+      name:
+        type: string
+    type: object
+  service.UserResponse:
+    properties:
+      id:
+        type: integer
+    type: object
+info:
+  contact: {}
+paths:
+  /postgres/users:
+    post:
+      consumes:
+      - application/json
+      description: Добавляет нового пользователя в PostgreSQL
+      parameters:
+      - description: Данные пользователя
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/service.UserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ID нового пользователя
+          schema:
+            $ref: '#/definitions/service.UserResponse'
+        "400":
+          description: Некорректные данные
+          schema:
+            type: string
+        "500":
+          description: Ошибка сервера
+          schema:
+            type: string
+      summary: Создать пользователя в БД
+  /redis/incr:
+    post:
+      consumes:
+      - application/json
+      description: Увеличивает значение по ключу на переданное значение
+      parameters:
+      - description: Данные запроса
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/service.RequestPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Ответ с новым значением
+          schema:
+            $ref: '#/definitions/service.ResponsePayload'
+        "400":
+          description: Некорректные данные
+          schema:
+            type: string
+        "500":
+          description: Ошибка сервера
+          schema:
+            type: string
+      summary: Инкрементировать значение в Redis
+  /sign/hmacsha512:
+    post:
+      consumes:
+      - application/json
+      description: Возвращает HMAC-SHA512 подпись переданного текста с указанным ключом
+      parameters:
+      - description: Данные запроса
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/service.HMACRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Ответ с подписью
+          schema:
+            $ref: '#/definitions/service.HMACResponse'
+        "400":
+          description: Некорректные данные
+          schema:
+            type: string
+        "500":
+          description: Ошибка сервера
+          schema:
+            type: string
+      summary: Генерация HMAC-SHA512 подписи
+swagger: "2.0"
